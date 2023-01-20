@@ -16,6 +16,7 @@ Abstract:
 --*/
 
 #pragma once
+#define BUILD_MLAS_NO_ONNXRUNTIME
 
 #include <cstddef>
 #include <cstdlib>

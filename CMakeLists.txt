@@ -24,6 +24,15 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 set(ONNXRUNTIME_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(mlas_common_srcs
   ${ONNXRUNTIME_ROOT}/lib/platform.cpp
@@ -392,3 +401,18 @@ target_include_directories(onnxruntime_mlas_static PRIVATE ${CMAKE_CURRENT_SOURC
 # Does not support ONNXRUNTIME threadpool
 target_compile_definitions(onnxruntime_mlas PUBLIC MLAS_NO_ONNXRUNTIME_THREADPOOL)
 target_compile_definitions(onnxruntime_mlas_static PUBLIC MLAS_NO_ONNXRUNTIME_THREADPOOL)
+
+
+enable_testing()
+file(GLOB mlas_test_SRC
+        "src/*.h"
+        "src/*.cpp")
+add_executable(mlas_test ${mlas_test_SRC})
+target_link_libraries(mlas_test GTest::gtest_main)
+target_compile_definitions(mlas_test PUBLIC MLAS_NO_ONNXRUNTIME_THREADPOOL)
+
+
+include(GoogleTest)
+gtest_discover_tests(mlas_test)
+
+
